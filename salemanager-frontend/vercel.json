@@ -1,16 +1,18 @@
 {
   "version": 2,
+  "public": true,
+  "outputDirectory": "dist",
   "routes": [
     {
       "handle": "filesystem"
     },
     {
       "src": "/assets/(.*)",
-      "dest": "/assets/$1"
+      "dest": "/dist/assets/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/dist/index.html"
     }
   ]
 }
