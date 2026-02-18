@@ -1,7 +1,6 @@
 // Vercel Serverless Function for Dashboard API
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
@@ -30,7 +29,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
 
     res.status(200).json(stats);
-  } catch (error: any) {
+  } catch (error) {
     res.status(500).json({ error: 'Internal server error', message: error.message });
   }
 }

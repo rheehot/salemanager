@@ -1,13 +1,12 @@
 // Vercel Serverless Function for Customers API
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 // In-memory storage for demo (replace with real database)
-let customers: any[] = [
+let customers = [
   { id: '1', name: '홍길동', company: '삼성전자', email: 'hong@example.com', phone: '010-1234-5678', status: 'active', createdAt: new Date().toISOString() },
   { id: '2', name: '김철수', company: 'LG전자', email: 'kim@example.com', phone: '010-2345-6789', status: 'lead', createdAt: new Date().toISOString() },
 ];
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req, res) {
   const { method, query } = req;
 
   // CORS headers
@@ -69,7 +68,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
         return res.status(405).end(`Method ${method} Not Allowed`);
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Customers API error:', error);
     return res.status(500).json({ error: 'Internal server error', message: error.message });
   }

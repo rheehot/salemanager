@@ -1,12 +1,11 @@
 // Vercel Serverless Function for Leads API
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-let leads: any[] = [
+let leads = [
   { id: '1', name: '이영희', company: '네이버', email: 'lee@example.com', phone: '010-3456-7890', status: 'new', source: 'website', createdAt: new Date().toISOString() },
   { id: '2', name: '박민수', company: '카카오', email: 'park@example.com', phone: '010-4567-8901', status: 'contacted', source: 'referral', createdAt: new Date().toISOString() },
 ];
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req, res) {
   const { method, query } = req;
 
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -50,7 +49,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
         return res.status(405).end(`Method ${method} Not Allowed`);
     }
-  } catch (error: any) {
+  } catch (error) {
     return res.status(500).json({ error: 'Internal server error', message: error.message });
   }
 }

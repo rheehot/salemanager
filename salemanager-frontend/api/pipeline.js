@@ -1,13 +1,12 @@
 // Vercel Serverless Function for Pipeline/Opportunities API
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-let opportunities: any[] = [
+let opportunities = [
   { id: '1', title: '삼성전자 ERP 구축', customerId: '1', stage: 'proposal', value: 50000000, probability: 60, expectedCloseDate: '2026-03-15', notes: '제안서 제출 완료', createdAt: new Date().toISOString() },
   { id: '2', title: 'LG전자 CMS 도입', customerId: '2', stage: 'negotiation', value: 30000000, probability: 80, expectedCloseDate: '2026-02-28', notes: '가격 협의 중', createdAt: new Date().toISOString() },
   { id: '3', title: '네이버 클라우드 migration', customerId: '1', stage: 'discovery', value: 80000000, probability: 30, expectedCloseDate: '2026-04-30', notes: '요구사항 분석 중', createdAt: new Date().toISOString() },
 ];
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req, res) {
   const { method, query } = req;
 
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -51,7 +50,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
         return res.status(405).end(`Method ${method} Not Allowed`);
     }
-  } catch (error: any) {
+  } catch (error) {
     return res.status(500).json({ error: 'Internal server error', message: error.message });
   }
 }
