@@ -1,0 +1,63 @@
+{
+  "sessionCount": 3,
+  "lastSession": {
+    "startedAt": "2026-02-18T03:05:12.829Z",
+    "platform": "claude",
+    "level": "Starter"
+  },
+  "project": {
+    "name": "SaleManager",
+    "description": "영업 관리 시스템 - Sales management system",
+    "version": "1.0.0",
+    "level": "Starter",
+    "features": [
+      "customer-lead-management",
+      "sales-pipeline",
+      "activity-logging",
+      "dashboard"
+    ]
+  },
+  "conventions": {
+    "naming": {
+      "components": "PascalCase",
+      "files": "camelCase",
+      "constants": "UPPER_SNAKE_CASE"
+    },
+    "repositoryStructure": "multi-repo",
+    "apiStyle": "REST"
+  },
+  "team": {
+    "frontend": {
+      "repository": "salemanager-frontend",
+      "techStack": [
+        "React",
+        "TypeScript",
+        "Vite",
+        "Tailwind CSS"
+      ],
+      "lead": "TBD",
+      "status": "assigned"
+    },
+    "backend": {
+      "repository": "salemanager-backend",
+      "techStack": [
+        "Express",
+        "TypeScript",
+        "SQLite",
+        "Prisma"
+      ],
+      "lead": "TBD",
+      "status": "assigned"
+    },
+    "test": {
+      "repository": "salemanager-test",
+      "techStack": [
+        "Playwright",
+        "Jest",
+        "Testing Library"
+      ],
+      "lead": "TBD",
+      "status": "assigned"
+    }
+  }
+}

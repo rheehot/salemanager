@@ -1,0 +1,131 @@
+{
+  "timestamp": "2026-02-18T03:04:16.373Z",
+  "reason": "compaction",
+  "status": {
+    "version": "2.0",
+    "lastUpdated": "2026-02-18T11:45:00.000Z",
+    "activeFeatures": [
+      "salemanager-system"
+    ],
+    "primaryFeature": "salemanager-system",
+    "features": {
+      "salemanager-system": {
+        "phase": "check",
+        "status": "completed",
+        "matchRate": 95,
+        "iterationCount": 0,
+        "startedAt": "2026-02-18T11:20:00.000Z",
+        "documents": {
+          "plan": "docs/01-plan/features/salemanager-system.plan.md",
+          "design": "docs/02-design/features/salemanager-system.design.md",
+          "analysis": "docs/03-analysis/salemanager-system.analysis.md",
+          "report": null
+        },
+        "tasks": [
+          {
+            "id": "PLAN-001",
+            "title": "[Plan] salemanager-system",
+            "status": "completed",
+            "assignee": "cto-lead",
+            "createdAt": "2026-02-18T11:20:00.000Z"
+          },
+          {
+            "id": "DESIGN-001",
+            "title": "[Design] salemanager-system",
+            "status": "completed",
+            "assignee": "design-team",
+            "createdAt": "2026-02-18T11:30:00.000Z"
+          },
+          {
+            "id": "DO-001",
+            "title": "[Do] salemanager-system",
+            "status": "completed",
+            "assignee": "implementation-team",
+            "createdAt": "2026-02-18T11:40:00.000Z"
+          },
+          {
+            "id": "CHECK-001",
+            "title": "[Check] salemanager-system",
+            "status": "completed",
+            "assignee": "gap-detector",
+            "createdAt": "2026-02-18T11:45:00.000Z"
+          }
+        ],
+        "level": "Starter",
+        "teamMode": false
+      }
+    },
+    "pipeline": {
+      "currentPhase": 4,
+      "level": "Starter",
+      "phaseHistory": [
+        {
+          "phase": 1,
+          "enteredAt": "2026-02-18T11:20:00.000Z",
+          "exitedAt": "2026-02-18T11:30:00.000Z",
+          "description": "Plan phase completed"
+        },
+        {
+          "phase": 2,
+          "enteredAt": "2026-02-18T11:30:00.000Z",
+          "exitedAt": "2026-02-18T11:40:00.000Z",
+          "description": "Design phase completed"
+        },
+        {
+          "phase": 3,
+          "enteredAt": "2026-02-18T11:40:00.000Z",
+          "exitedAt": "2026-02-18T11:45:00.000Z",
+          "description": "Do phase completed"
+        },
+        {
+          "phase": 4,
+          "enteredAt": "2026-02-18T11:45:00.000Z",
+          "description": "Check phase completed"
+        }
+      ]
+    },
+    "session": {
+      "startedAt": "2026-02-18T11:20:00.000Z",
+      "onboardingCompleted": true,
+      "lastActivity": "2026-02-18T11:45:00.000Z"
+    },
+    "history": [
+      {
+        "timestamp": "2026-02-18T11:20:00.000Z",
+        "action": "phase_started",
+        "details": {
+          "feature": "salemanager-system",
+          "phase": "plan",
+          "level": "Starter"
+        }
+      },
+      {
+        "timestamp": "2026-02-18T11:30:00.000Z",
+        "action": "phase_started",
+        "details": {
+          "feature": "salemanager-system",
+          "phase": "design",
+          "level": "Starter"
+        }
+      },
+      {
+        "timestamp": "2026-02-18T11:40:00.000Z",
+        "action": "phase_started",
+        "details": {
+          "feature": "salemanager-system",
+          "phase": "do",
+          "level": "Starter"
+        }
+      },
+      {
+        "timestamp": "2026-02-18T11:45:00.000Z",
+        "action": "phase_started",
+        "details": {
+          "feature": "salemanager-system",
+          "phase": "check",
+          "level": "Starter"
+        }
+      }
+    ]
+  }
+}

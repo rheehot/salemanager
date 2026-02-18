@@ -1,0 +1,110 @@
+// Prisma Schema for SaleManager
+// Database: SQLite
+// ORM: Prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Customer - 고객 정보
+model Customer {
+  id        String   @id @default(uuid())
+  name      String
+  company   String?
+  email     String?
+  phone     String?
+  status    String   @default("active") // active, inactive
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  opportunities Opportunity[]
+  activities    Activity[]
+  emailLogs     EmailLog[]
+
+  @@map("customers")
+}
+
+// Lead - 리드/잠재고객
+model Lead {
+  id        String   @id @default(uuid())
+  name      String
+  company   String?
+  email     String?
+  phone     String?
+  source    String   // website, referral, event, cold_call, other
+  status    String   @default("new") // new, contacted, qualified, converted, lost
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  opportunities Opportunity[]
+  activities    Activity[]
+
+  @@map("leads")
+}
+
+// Opportunity - 영업 기회
+model Opportunity {
+  id                String    @id @default(uuid())
+  customerId        String?
+  leadId            String?
+  title             String
+  stage             String    @default("prospecting") // prospecting, qualification, proposal, negotiation, closed_won, closed_lost
+  value             Float     @default(0)
+  probability       Int       @default(10)
+  expectedCloseDate DateTime
+  actualCloseDate   DateTime?
+  notes             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  lead       Lead?     @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  activities Activity[]
+
+  @@map("opportunities")
+}
+
+// Activity - 영업 활동
+model Activity {
+  id            String    @id @default(uuid())
+  type          String    // email, call, meeting, note, other
+  customerId    String?
+  leadId        String?
+  opportunityId String?
+  title         String
+  description   String?
+  activityDate  DateTime
+  duration      Int?      // minutes
+  outcome       String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  customer    Customer?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  lead        Lead?        @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  opportunity Opportunity?  @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+
+  @@map("activities")
+}
+
+// EmailLog - 이메일 발송 기록
+model EmailLog {
+  id        String   @id @default(uuid())
+  to        String
+  cc        String?
+  subject   String
+  body      String
+  status    String   @default("sending") // sending, sent, failed
+  messageId String?
+  error     String?
+  customerId String?
+  createdAt DateTime @default(now())
+
+  customer  Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@map("email_logs")
+}
