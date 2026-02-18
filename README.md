@@ -78,22 +78,35 @@ npx playwright install
 npm run test
 ```
 
+## 🚀 배포 (Deployment)
+
+### 실서비스 접속
+
+- **프론트엔드**: [https://salemanager-frontend.vercel.app](https://salemanager-frontend.vercel.app)
+- **백엔드 배포**: 아래 Railway 버튼으로 배포
+
+### 빠른 백엔드 배포
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new?repo=https://github.com/rheehot/salemanager&ref=main)
+
+상세 가이드: [Railway 배포 가이드](./RAILWAY_DEPLOY.md)
+
 ## 개발 현황
 
 ### PDCA 진행 상황
 
 ```
-[Plan] ✅ → [Design] 🔄 → [Do] ⏳ → [Check] ⏳ → [Act] ⏳
+[Plan] ✅ → [Design] ✅ → [Do] ✅ → [Check] ✅ → [Report] ✅
 ```
 
-**현재 단계**: Plan 완료, Design 진입 준비
+**현재 단계**: PDCA 완료, 배포 진행 중
 
 ### 최신 업데이트
 
-- 2026-02-18: Plan Phase 완료
-- 요구사항 분석 완료 (FR-01 ~ FR-10)
-- 아키텍처 결정 (Starter Level, Multi-repo)
-- 기술 스택 선정 완료
+- 2026-02-18: PDCA 완료 (Match Rate: 95%)
+- 2026-02-18: Vercel 배포 완료
+- 2026-02-18: 이메일 캠페인 기능 추가
+- 2026-02-18: 전체 CRUD 구현 완료
 
 ## 문서
 
