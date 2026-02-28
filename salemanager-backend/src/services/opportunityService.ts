@@ -1,6 +1,6 @@
 // Opportunity Service
 import prisma from '../lib/db/prisma.js';
-import { PaginationParams, PaginatedResponse } from '../types/index.js';
+import { PaginationParams, PaginatedResponse, MAX_PAGINATION_LIMIT, DEFAULT_PAGINATION_LIMIT } from '../types/index.js';
 
 export interface OpportunityCreate {
   title: string;
@@ -18,8 +18,10 @@ export interface OpportunityUpdate extends Partial<OpportunityCreate> {}
 
 export class OpportunityService {
   async findAll(params: PaginationParams & { stage?: string }): Promise<PaginatedResponse<any>> {
-    const { page = 1, limit = 20, stage } = params;
-    const skip = (page - 1) * limit;
+    const { page = 1, limit = DEFAULT_PAGINATION_LIMIT, stage } = params;
+    // Enforce max limit to prevent unbounded data retrieval
+    const safeLimit = Math.min(limit, MAX_PAGINATION_LIMIT);
+    const skip = (page - 1) * safeLimit;
 
     const where: any = {};
     if (stage) {
@@ -30,7 +32,7 @@ export class OpportunityService {
       prisma.opportunity.findMany({
         where,
         skip,
-        take: limit,
+        take: safeLimit,
         orderBy: { createdAt: 'desc' },
         include: {
           customer: { select: { id: true, name: true, company: true } },
@@ -44,9 +46,9 @@ export class OpportunityService {
       data,
       pagination: {
         page,
-        limit,
+        limit: safeLimit,
         total,
-        totalPages: Math.ceil(total / limit),
+        totalPages: Math.ceil(total / safeLimit),
       },
     };
   }

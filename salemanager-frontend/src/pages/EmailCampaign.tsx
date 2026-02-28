@@ -5,6 +5,8 @@ import { useApp } from '@/contexts/AppContext';
 import Button from '@/components/common/Button';
 import Modal from '@/components/common/Modal';
 
+const API_URL = import.meta.env.VITE_API_URL || '/api';
+
 interface EmailTemplate {
   id: string;
   name: string;
@@ -57,9 +59,9 @@ export default function EmailCampaign() {
     try {
       setIsLoading(true);
       const [customersRes, templatesRes, logsRes] = await Promise.all([
-        fetch('http://localhost:3000/api/customers?limit=100'),
-        fetch('http://localhost:3000/api/emails/templates'),
-        fetch('http://localhost:3000/api/emails/logs?limit=20')
+        fetch(`${API_URL}/customers?limit=100`),
+        fetch(`${API_URL}/emails/templates`),
+        fetch(`${API_URL}/emails/logs?limit=20`)
       ]);
 
       if (customersRes.ok) {
@@ -85,7 +87,7 @@ export default function EmailCampaign() {
 
   const handleTemplateSelect = async (templateId: string) => {
     try {
-      const res = await fetch(`http://localhost:3000/api/emails/templates/${templateId}`);
+      const res = await fetch(`${API_URL}/emails/templates/${templateId}`);
       if (res.ok) {
         const data = await res.json();
         const template: EmailTemplate = data.data;
@@ -129,7 +131,7 @@ export default function EmailCampaign() {
 
     try {
       setIsLoading(true);
-      const res = await fetch('http://localhost:3000/api/emails/send-many', {
+      const res = await fetch(`${API_URL}/emails/send-many`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

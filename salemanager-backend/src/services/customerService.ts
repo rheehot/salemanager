@@ -1,6 +1,6 @@
 // Customer Service
 import prisma from '../lib/db/prisma.js';
-import { PaginationParams, PaginatedResponse } from '../types/index.js';
+import { PaginationParams, PaginatedResponse, MAX_PAGINATION_LIMIT, DEFAULT_PAGINATION_LIMIT } from '../types/index.js';
 import { cleanSearchInput } from '../utils/string.js';
 
 export interface CustomerCreate {
@@ -15,8 +15,10 @@ export interface CustomerUpdate extends Partial<CustomerCreate> {}
 
 export class CustomerService {
   async findAll(params: PaginationParams): Promise<PaginatedResponse<any>> {
-    const { page = 1, limit = 20, search, status } = params;
-    const skip = (page - 1) * limit;
+    const { page = 1, limit = DEFAULT_PAGINATION_LIMIT, search, status } = params;
+    // Enforce max limit to prevent unbounded data retrieval
+    const safeLimit = Math.min(limit, MAX_PAGINATION_LIMIT);
+    const skip = (page - 1) * safeLimit;
 
     const where: any = {};
     if (search) {
@@ -38,7 +40,7 @@ export class CustomerService {
       prisma.customer.findMany({
         where,
         skip,
-        take: limit,
+        take: safeLimit,
         orderBy: { createdAt: 'desc' },
       }),
       prisma.customer.count({ where }),
@@ -48,9 +50,9 @@ export class CustomerService {
       data,
       pagination: {
         page,
-        limit,
+        limit: safeLimit,
         total,
-        totalPages: Math.ceil(total / limit),
+        totalPages: Math.ceil(total / safeLimit),
       },
     };
   }

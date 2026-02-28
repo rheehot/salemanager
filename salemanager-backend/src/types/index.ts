@@ -1,5 +1,9 @@
 // Shared Types for SaleManager Backend
 
+// Pagination Constants
+export const MAX_PAGINATION_LIMIT = 100;
+export const DEFAULT_PAGINATION_LIMIT = 20;
+
 // Customer Status
 export const CustomerStatus = {
   ACTIVE: 'active',

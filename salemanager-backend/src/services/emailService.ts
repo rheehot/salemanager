@@ -1,6 +1,7 @@
 // Email Service
 import nodemailer from 'nodemailer';
 import prisma from '../lib/db/prisma.js';
+import { MAX_PAGINATION_LIMIT, DEFAULT_PAGINATION_LIMIT } from '../types/index.js';
 
 export interface EmailSendDto {
   to: string[];
@@ -211,9 +212,31 @@ export class EmailService {
     return results;
   }
 
+  /**
+   * Sanitize template variable values to prevent HTML injection
+   */
+  private sanitizeTemplateValue(value: any): string {
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    const str = String(value);
+
+    // HTML escape to prevent XSS
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#x27;')
+      .replace(/\//g, '&#x2F;');
+  }
+
   private renderTemplate(template: string, data: Record<string, any>): string {
     return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-      return data[key] || match;
+      const value = data[key];
+      // Sanitize value to prevent HTML/script injection
+      return value !== undefined ? this.sanitizeTemplateValue(value) : match;
     });
   }
 
@@ -225,13 +248,15 @@ export class EmailService {
     return emailTemplates.find(t => t.id === id);
   }
 
-  async getEmailLogs(page = 1, limit = 20) {
-    const skip = (page - 1) * limit;
+  async getEmailLogs(page = 1, limit = DEFAULT_PAGINATION_LIMIT) {
+    // Enforce max limit to prevent unbounded data retrieval
+    const safeLimit = Math.min(limit, MAX_PAGINATION_LIMIT);
+    const skip = (page - 1) * safeLimit;
 
     const [logs, total] = await Promise.all([
       prisma.emailLog.findMany({
         skip,
-        take: limit,
+        take: safeLimit,
         orderBy: { createdAt: 'desc' },
         include: {
           customer: { select: { name: true, email: true } }
@@ -244,9 +269,9 @@ export class EmailService {
       data: logs,
       pagination: {
         page,
-        limit,
+        limit: safeLimit,
         total,
-        totalPages: Math.ceil(total / limit)
+        totalPages: Math.ceil(total / safeLimit)
       }
     };
   }

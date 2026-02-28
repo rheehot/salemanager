@@ -1,6 +1,6 @@
 // Lead Service
 import prisma from '../lib/db/prisma.js';
-import { PaginationParams, PaginatedResponse } from '../types/index.js';
+import { PaginationParams, PaginatedResponse, MAX_PAGINATION_LIMIT, DEFAULT_PAGINATION_LIMIT } from '../types/index.js';
 import { cleanSearchInput } from '../utils/string.js';
 
 export interface LeadCreate {
@@ -16,8 +16,10 @@ export interface LeadUpdate extends Partial<LeadCreate> {}
 
 export class LeadService {
   async findAll(params: PaginationParams & { source?: string }): Promise<PaginatedResponse<any>> {
-    const { page = 1, limit = 20, search, status, source } = params;
-    const skip = (page - 1) * limit;
+    const { page = 1, limit = DEFAULT_PAGINATION_LIMIT, search, status, source } = params;
+    // Enforce max limit to prevent unbounded data retrieval
+    const safeLimit = Math.min(limit, MAX_PAGINATION_LIMIT);
+    const skip = (page - 1) * safeLimit;
 
     const where: any = {};
     if (search) {
@@ -42,7 +44,7 @@ export class LeadService {
       prisma.lead.findMany({
         where,
         skip,
-        take: limit,
+        take: safeLimit,
         orderBy: { createdAt: 'desc' },
       }),
       prisma.lead.count({ where }),
@@ -52,9 +54,9 @@ export class LeadService {
       data,
       pagination: {
         page,
-        limit,
+        limit: safeLimit,
         total,
-        totalPages: Math.ceil(total / limit),
+        totalPages: Math.ceil(total / safeLimit),
       },
     };
   }

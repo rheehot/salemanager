@@ -1,6 +1,6 @@
 // Activity Service
 import prisma from '../lib/db/prisma.js';
-import { PaginationParams, PaginatedResponse } from '../types/index.js';
+import { PaginationParams, PaginatedResponse, MAX_PAGINATION_LIMIT, DEFAULT_PAGINATION_LIMIT } from '../types/index.js';
 
 export interface ActivityCreate {
   type: string;
@@ -25,8 +25,10 @@ export class ActivityService {
       opportunityId?: string;
     }
   ): Promise<PaginatedResponse<any>> {
-    const { page = 1, limit = 20, type, customerId, leadId, opportunityId } = params;
-    const skip = (page - 1) * limit;
+    const { page = 1, limit = DEFAULT_PAGINATION_LIMIT, type, customerId, leadId, opportunityId } = params;
+    // Enforce max limit to prevent unbounded data retrieval
+    const safeLimit = Math.min(limit, MAX_PAGINATION_LIMIT);
+    const skip = (page - 1) * safeLimit;
 
     const where: any = {};
     if (type) where.type = type;
@@ -38,7 +40,7 @@ export class ActivityService {
       prisma.activity.findMany({
         where,
         skip,
-        take: limit,
+        take: safeLimit,
         orderBy: { activityDate: 'desc' },
         include: {
           customer: { select: { id: true, name: true } },
@@ -53,9 +55,9 @@ export class ActivityService {
       data,
       pagination: {
         page,
-        limit,
+        limit: safeLimit,
         total,
-        totalPages: Math.ceil(total / limit),
+        totalPages: Math.ceil(total / safeLimit),
       },
     };
   }

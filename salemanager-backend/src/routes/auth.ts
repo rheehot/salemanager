@@ -2,6 +2,11 @@
 import express from 'express';
 import { AuthController } from '../controllers/authController.js';
 import { authenticate } from '../middleware/auth.js';
+import {
+  registerValidation,
+  loginValidation,
+  changePasswordValidation,
+} from '../middleware/validator.js';
 
 const router = express.Router();
 const authController = new AuthController();
@@ -11,14 +16,14 @@ const authController = new AuthController();
  * @desc    Register a new user
  * @access  Public
  */
-router.post('/register', authController.register.bind(authController));
+router.post('/register', registerValidation, authController.register.bind(authController));
 
 /**
  * @route   POST /api/auth/login
  * @desc    Login user
  * @access  Public
  */
-router.post('/login', authController.login.bind(authController));
+router.post('/login', loginValidation, authController.login.bind(authController));
 
 /**
  * @route   GET /api/auth/me
@@ -32,6 +37,6 @@ router.get('/me', authenticate, authController.me.bind(authController));
  * @desc    Change user password
  * @access  Private (requires auth)
  */
-router.put('/change-password', authenticate, authController.changePassword.bind(authController));
+router.put('/change-password', authenticate, changePasswordValidation, authController.changePassword.bind(authController));
 
 export default router;
