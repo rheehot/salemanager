@@ -1,6 +1,7 @@
 // Customer Service
 import prisma from '../lib/db/prisma.js';
 import { PaginationParams, PaginatedResponse } from '../types/index.js';
+import { cleanSearchInput } from '../utils/string.js';
 
 export interface CustomerCreate {
   name: string;
@@ -19,11 +20,15 @@ export class CustomerService {
 
     const where: any = {};
     if (search) {
-      where.OR = [
-        { name: { contains: search } },
-        { company: { contains: search } },
-        { email: { contains: search } },
-      ];
+      // Sanitize search input to prevent wildcard injection
+      const sanitizedSearch = cleanSearchInput(search);
+      if (sanitizedSearch) {
+        where.OR = [
+          { name: { contains: sanitizedSearch } },
+          { company: { contains: sanitizedSearch } },
+          { email: { contains: sanitizedSearch } },
+        ];
+      }
     }
     if (status) {
       where.status = status;

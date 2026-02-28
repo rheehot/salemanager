@@ -5,8 +5,10 @@ import dotenv from 'dotenv';
 
 // Middleware
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
+import { authenticate } from './middleware/auth.js';
 
 // Routes
+import authRoutes from './routes/auth.js';
 import customerRoutes from './routes/customers.js';
 import leadRoutes from './routes/leads.js';
 import opportunityRoutes from './routes/opportunities.js';
@@ -20,26 +22,43 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Configure CORS with whitelist
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',')
+  : ['http://localhost:5173'];
+
 // Middleware
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed'));
+    }
+  },
   credentials: true,
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check
+// Health check (public)
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// API Routes
-app.use('/api/customers', customerRoutes);
-app.use('/api/leads', leadRoutes);
-app.use('/api/opportunities', opportunityRoutes);
-app.use('/api/activities', activityRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/emails', emailRoutes);
+// Public routes (no authentication required)
+app.use('/api/auth', authRoutes);
+
+// Protected routes (authentication required)
+app.use('/api/customers', authenticate, customerRoutes);
+app.use('/api/leads', authenticate, leadRoutes);
+app.use('/api/opportunities', authenticate, opportunityRoutes);
+app.use('/api/activities', authenticate, activityRoutes);
+app.use('/api/dashboard', authenticate, dashboardRoutes);
+app.use('/api/emails', authenticate, emailRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
@@ -53,6 +72,7 @@ app.listen(PORT, () => {
   console.log(`📡 Running on http://localhost:${PORT}`);
   console.log(`🏥 Health: http://localhost:${PORT}/health`);
   console.log(`📊 API: http://localhost:${PORT}/api`);
+  console.log(`🔐 Authentication: ${process.env.JWT_SECRET ? 'Configured' : 'Using default (DEVELOPMENT ONLY)'}`);
 });
 
 export default app;
