@@ -3,9 +3,13 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
+// Config
+import { loadEnvConfig, logEnvConfig } from './config/env.js';
+
 // Middleware
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import { authenticate } from './middleware/auth.js';
+import { securityHeaders } from './middleware/security.js';
 
 // Routes
 import authRoutes from './routes/auth.js';
@@ -16,16 +20,17 @@ import activityRoutes from './routes/activities.js';
 import dashboardRoutes from './routes/dashboard.js';
 import emailRoutes from './routes/emails.js';
 
-// Load environment variables
+// Load and validate environment variables
 dotenv.config();
+const config = loadEnvConfig();
+
+// Log configuration (without sensitive data)
+logEnvConfig(config);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// Configure CORS with whitelist
-const allowedOrigins = process.env.CORS_ORIGIN
-  ? process.env.CORS_ORIGIN.split(',')
-  : ['http://localhost:5173'];
+// Configure CORS with whitelist from validated config
+const allowedOrigins = config.corsOrigin;
 
 // Middleware
 app.use(cors({
@@ -41,12 +46,21 @@ app.use(cors({
   },
   credentials: true,
 }));
+
+// Security headers
+app.use(securityHeaders);
+
+// Body parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Health check (public)
 app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    environment: config.nodeEnv
+  });
 });
 
 // Public routes (no authentication required)
@@ -67,12 +81,15 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`🚀 SaleManager Backend Server`);
-  console.log(`📡 Running on http://localhost:${PORT}`);
-  console.log(`🏥 Health: http://localhost:${PORT}/health`);
-  console.log(`📊 API: http://localhost:${PORT}/api`);
-  console.log(`🔐 Authentication: ${process.env.JWT_SECRET ? 'Configured' : 'Using default (DEVELOPMENT ONLY)'}`);
+app.listen(config.port, () => {
+  console.log(`════════════════════════════════════════════════════════════`);
+  console.log(`🚀 SaleManager Backend Server Started`);
+  console.log(`════════════════════════════════════════════════════════════`);
+  console.log(`📡 Server:     http://localhost:${config.port}`);
+  console.log(`🏥 Health:     http://localhost:${config.port}/health`);
+  console.log(`📊 API:        http://localhost:${config.port}/api`);
+  console.log(`🌍 Environment: ${config.nodeEnv}`);
+  console.log(`════════════════════════════════════════════════════════════`);
 });
 
 export default app;
